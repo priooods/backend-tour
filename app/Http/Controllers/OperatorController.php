@@ -138,8 +138,8 @@ class OperatorController extends Controller
                     'error_code' => 1,
                     'error_data' => 'User not found!',
                 ]);
-            $file_loc = public_path('images/') . $user->avatar;
-            unlink($file_loc);
+            // $file_loc = public_path('images/') . $user->avatar;
+            // unlink($file_loc);
             $user->delete();
             return response()->json([
                 'error_code' => 0,

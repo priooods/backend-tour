@@ -9,16 +9,12 @@ use Illuminate\Notifications\Notifiable;
 class Aset extends Model
 {
     use HasFactory, Notifiable;
+    public $timestamps = false;
+
 
     protected $fillable = [
-        'mukena',
-        'koper',
-        'peci',
-        'kain',
-        'batik',
-        'sabuk',
-        'jaket',
-        'tas_ransel',
-        'syal',
+        'jamaah_id',
+        'gudang_id',
+        'jumlah',
     ];
 }

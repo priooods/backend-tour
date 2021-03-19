@@ -45,4 +45,24 @@ class BelanjaControll extends Controller
             'data' => $data
         ], 200, [], JSON_NUMERIC_CHECK);
     }
+
+    public function show(Request $request){
+        $data = Belanja::find($request->id);
+        $item = $data->my_belanja;
+        foreach($item as $e){
+            $e->my_item;
+        }
+        return $this->responseSuccess($data);
+    }
+    public function item(Request $request){
+        $data = Belanja::find($request->id);
+        $item = $data->my_belanja;
+        $list = array();
+        foreach($item as $e){
+            // ;
+            array_push($list,$e->my_item);
+        }
+
+        return $this->responseSuccess($list);
+    }
 }

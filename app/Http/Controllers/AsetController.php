@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aset;
+use App\Models\Gudang;
+use App\Models\Jamaah;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -82,6 +84,15 @@ class AsetController extends Controller
             'error_code' => 0,
             'error_data' => 'Aset Jammah Berhasil diberikan diupdate ! Refresh halaman untuk melihat data terbaru',
         ], 200, [], JSON_NUMERIC_CHECK);
+        
+    }
 
+    public function beli(Request $request){
+        $barang = $request->bid;
+        $total = $request->total;
+        
+        Aset::create(['jamaah_id'=>$request->jid, 'gudang_id'=>$barang, 'jumlah'=>$total]);
+        
+        return Gudang::find($barang)->decrement('stok',$total);
     }
 }

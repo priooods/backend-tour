@@ -64,7 +64,10 @@ Route::post('aset/update', [AsetController::class, 'UpdateAset']);
 Route::post('belanja/add', [BelanjaControll::class, 'Add']);
 Route::post('belanja/find', [BelanjaControll::class, 'find']);
 Route::get('belanja/all', [BelanjaControll::class, 'all']);
+Route::get('belanja/test', [BelanjaControll::class, 'show']);
+Route::get('belanja/item',[BelanjaControll::class, 'item']);
 
+Route::post('aset/beli',[AsetController::class,'beli']);
 
 
 //Akuntan

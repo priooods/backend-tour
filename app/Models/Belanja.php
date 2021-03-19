@@ -31,4 +31,11 @@ class Belanja extends Model
         'harga_syal',
         'total'
     ];
+
+    public function my_belanja(){
+        return $this->hasMany(ItemBelanja::class,'belanja_id');
+    }
+    // public function my_item(){
+    //     return $this->hasManyThrough(Gudang::class, ItemBelanja::class, 'gudang_id', 'gudang_id');
+    // }
 }

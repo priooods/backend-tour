@@ -42,6 +42,7 @@ class CreateJamaahsTable extends Migration
             $table->date('tgl_habis_passport')->nullable();
             $table->date('tgl_keluar_passport')->nullable();
             $table->string('darah');
+            $table->string('code');
             $table->string('nama_mahram');
             $table->string('hubungan_mahram')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
