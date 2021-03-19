@@ -77,7 +77,7 @@ class MitraController extends Controller
             ]);
 
             $user = Mitra::where('username', $request->username)->first();
-            $jamaah = DB::table('jamaahs')->where('nama_mitra', $user->fullname)->get();
+            $jamaah = DB::table('jamaahs')->where('nama_mitra', $user->id)->get();
             if (empty($user)) {
                 return response([
                     'error_code' => 1,
