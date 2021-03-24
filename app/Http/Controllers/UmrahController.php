@@ -2,77 +2,91 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MaskapaiUmrah;
 use App\Models\Umrah;
+// use App\Models\Jadwal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
 class UmrahController extends Controller
 {
-    public function Add(){
-        $umrah = new Umrah();
-        $umrah->nama = request('nama');
-        $umrah->durasi = request('durasi');
-        $umrah->jenis_paket = request('jenis_paket');
-        $umrah->tahun = request('tahun');
-        $umrah->kuota = request('kuota');
-        $umrah->tgl_berangkat = request('tgl_berangkat');
-        $umrah->tgl_pulang = request('tgl_pulang');
-        $umrah->hotel_mekkah = request('hotel_mekkah');
-        $umrah->hotel_madinah = request('hotel_madinah');
-        $umrah->jenis_kamar = request('jenis_kamar');
-        $umrah->biaya = request('biaya');
-        $umrah->maskapai = request('maskapai');
+    public function add(Request $request){
         $statement = DB::select("SHOW TABLE STATUS LIKE 'umrahs'");
         $nextId = $statement[0]->Auto_increment;
-        $umrah->code = date("Y")."UMH".str_pad($nextId,6-floor(log10($nextId)),"0",STR_PAD_LEFT);
-        
-        $umrah->save();
-        return $this->responseSuccess($umrah);
+        $request['code'] = $request->tahun."UMH".str_pad($nextId,6-floor(log10($nextId)),"0",STR_PAD_LEFT);
+
+        if ($request->tanggal == null)
+            return $this->responseFailure(1,'need tanggal array field!');
+
+        if ($request->hotel == null)
+            return $this->responseFailure(1,'need hotel array field!');
+
+        if ($request->maskapai == null)
+            return $this->responseFailure(1,'need maskapai array field!');
+
+        $umrah = Umrah::create($request->toArray());
+        $tanggal = $umrah->jadwal()->createMany($request->tanggal);
+        $hotel = $umrah->hotels()->createMany($request->hotel);
+        $maskapai = $umrah->maskapais()->createMany($request->maskapai);
+        return $this->responseData([$umrah,$tanggal,$hotel,$maskapai]);
     }
 
-    public function getAll(){
-        return $this->responseSuccess(Umrah::all());
-    }
-
-    public function Update(Request $request){
-
-        $data = Umrah::where('id', $request->id)->first();
-        if (is_null($data)) {
-            return response()->json([
-                'error_code' => 1,
-                'error_data' => 'Mohon maaf data paket umrah yang anda cari tidak ditemukan !'
-            ]);
+    public function show(Request $request){
+        try {
+            if ($request->id ==null)
+               return $this->responseData(Umrah::all());
+            $umrah = Umrah::find($request->id);
+            foreach ($umrah->hotel as $hotel) {
+                 $hotel->kamar;
+            }
+            foreach ($umrah->maskapai as $hotel) {
+                 $hotel->maskapai;
+            }
+            $umrah->jadwal;
+            return $this->responseData($umrah);
+        } catch (\Throwable $th) {
+            return $this->responseTryFail();
         }
-
-        if(!is_null($request->nama)) $data->nama = $request->nama;
-        if(!is_null($request->durasi)) $data->durasi = $request->durasi;
-        if(!is_null($request->jenis_paket)) $data->jenis_paket = $request->jenis_paket;
-        if(!is_null($request->tahun)) $data->tahun = $request->tahun;
-        if(!is_null($request->kuota)) $data->kuota = $request->kuota;
-        if(!is_null($request->tgl_berangkat))$data->tgl_berangkat = $request->tgl_berangkat;
-        if(!is_null($request->tgl_pulang))$data->tgl_pulang = $request->tgl_pulang;
-        if(!is_null($request->hotel_mekkah))$data->hotel_mekkah = $request->hotel_mekkah;
-        if(!is_null($request->hotel_madinah))$data->hotel_madinah = $request->hotel_madinah;
-        if(!is_null($request->jenis_kamar))$data->jenis_kamar = $request->jenis_kamar;
-        if(!is_null($request->biaya))$data->biaya = $request->biaya;
-        if(!is_null($request->maskapai))$data->maskapai = $request->maskapai;
-        $data->update();
-        return $this->responseSuccess($data);
     }
 
-    public function respondFailure(){
-        return response()->json([
-            'error_code' => 1,
-            'error_data' => 'Harap periksa kembali koneksi internet anda !',
-        ]);
-    }
+    protected function update(Request $request){
+        try {
+            $umrah = Umrah::find($request->id);
+            $umrah->update($request->toArray());
+            if ($request->tanggal != null)
+                $umrah->jadwal()->createMany($request->tanggal);
 
-    public function responseSuccess($data){
-        return response()->json([
-            'error_code' => 0,
-            'error_data' => '',
-            'data' => $data
-        ], 200, [], JSON_NUMERIC_CHECK);
+            if ($request->hotel != null)
+                foreach($request->hotel as $data){
+                    $umrah->jadwal()->firstOrCreate($data);
+                }
+                // $umrah->hotels()->createMany($request->hotel);
+
+            if ($request->maskapai != null)
+                foreach($request->maskapai as $data){
+                    $umrah->maskapais()->firstOrCreate($data);
+                }
+                // $umrah->maskapais()->createMany($request->maskapai);
+
+            return $this->responseText('update successfully!');
+        } catch (\Throwable $th) {
+            return $this->responseTryFail();
+        }
+    }
+    protected function delete_maskapai(Request $request){
+        // try {
+            MaskapaiUmrah::where('umrah_id',$request->umrah_id)->where('maskapai_id',$request->maskapai_id)->delete();
+            return $this->responseText('delete successfully!');
+        // } catch (\Throwable $th) {
+        //     return $this->responseTryFail();
+        // }
+    }
+    protected function delete_hotel(Request $request){
+        try {
+            MaskapaiUmrah::where('hotel_id',$request->umrah_id)->where('maskapai_id',$request->maskapai_id)->delete();
+            return $this->responseText('delete successfully!');
+        } catch (\Throwable $th) {
+            return $this->responseTryFail();
+        }
     }
 }

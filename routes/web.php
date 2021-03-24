@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Contracts\View\Factory as ViewFactory;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,5 +15,8 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    // $factory = app(ViewFactory::class);
+    // return $factory->make('welcome', ['enj'], []);
+    // return 1;
+        // return $factory->make('welcome', $data, $mergeData);
 });

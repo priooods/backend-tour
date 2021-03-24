@@ -5,8 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAkuntansTable extends Migration
-{
+class CreateAkuntansTable extends Migration{
     /**
      * Run the migrations.
      *

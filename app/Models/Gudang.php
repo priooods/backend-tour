@@ -11,14 +11,8 @@ class Gudang extends Model
     use HasFactory, Notifiable;
 
     protected $fillable =[
-        'mukena',
-        'koper',
-        'peci',
-        'kain',
-        'batik',
-        'sabuk',
-        'jaket',
-        'tas_ransel',
-        'syal',
+        'nama',
+        'harga',
+        'stok'
     ];
 }

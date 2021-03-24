@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateItemBelanjasTable extends Migration
-{
+class CreateItemBelanjasTable extends Migration{
     /**
      * Run the migrations.
      *
@@ -17,10 +16,10 @@ class CreateItemBelanjasTable extends Migration
             $table->id();
             $table->unsignedBigInteger('belanja_id');
             $table->unsignedBigInteger('gudang_id');
-            $table->timestamps();
+            $table->integer('total');
         });
 
-        
+
         Schema::table('item_belanjas', function($table){
             $table->foreign('belanja_id')->references('id')->on('belanjas')->onDelete('cascade');
             $table->foreign('gudang_id')->references('id')->on('gudangs')->onDelete('cascade');

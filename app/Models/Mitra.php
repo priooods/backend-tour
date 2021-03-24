@@ -17,9 +17,15 @@ class Mitra extends Model
         'username',
         'no_tlp',
         'alamat',
-        'cabang',
+        'cabang_id',
         'code',
         'code_agent',
         'avatar',
     ];
+
+    public function jamaah()
+    {
+        return;
+        // return $this->hasMany(::class, 'foreign_key', 'local_key');
+    }
 }

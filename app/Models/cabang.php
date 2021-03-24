@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class cabang extends Model
+class Cabang extends Model
 {
     use HasFactory, Notifiable;
 
@@ -15,6 +15,10 @@ class cabang extends Model
         'kota',
         'provinsi',
         'alamat',
-        'code_cabang'
+        'code'
     ];
+
+    public function mitra(){
+        return $this->hasMany(Mitra::class,'cabang_id','id')->select("id","code","fullname","alamat","no_tlp","avatar");
+    }
 }

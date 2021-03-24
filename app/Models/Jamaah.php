@@ -12,6 +12,8 @@ class Jamaah extends Model
 
     protected $fillable = [
         'code',
+        'pesanan_id',
+        'aset_id',
         'nama_lengkap',
         'nama_ayah',
         'nomer_ktp',
@@ -29,10 +31,6 @@ class Jamaah extends Model
         'pendidikan',
         'pekerjaan',
         'status_haji',
-        'pilihan_id',
-        // 'tgl_berangkat',
-        'nama_mitra',
-        'biaya_dibayar',
         'tgl_keluar_passport',
         'tgl_habis_passport',
         'nama_passport',

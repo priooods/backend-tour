@@ -8,26 +8,20 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
 
-class MitraController extends Controller
-{
+class MitraController extends Controller{
     public function register (Request $request){
-
-        try {
+        // try {
             $request['password'] = Crypt::encrypt($request['password']);
             $request['log'] = 0;
 
             $statement = DB::select("SHOW TABLE STATUS LIKE 'mitras'");
             $nextId = $statement[0]->Auto_increment;
-            $request['code'] = date("Y")."MTR".str_pad($nextId,6-floor(log10($nextId)),"0",STR_PAD_LEFT);
-            
+            $request['code'] = date("Y")."MTR".str_pad($nextId,5-floor(log10($nextId)),"0",STR_PAD_LEFT);
+
             $check = Mitra::where('username', $request->username)->first();
             if ($check) {
-                return response()->json([
-                    'error_code' => 1,
-                    'error_data' => "Pengguna dengan username tersebut sudah terdaftar. Harap ganti dengan username lain !",
-                ]);
+                return $this->responseFailure(1,"Pengguna dengan username tersebut sudah terdaftar. Harap ganti dengan username lain !");
             }
 
             $user = Mitra::create($request->toArray());
@@ -39,66 +33,39 @@ class MitraController extends Controller
                     'avatar' => $filename,
                 ]);
             }
-            return $this->responseSuccess($user);
-        } catch (\Throwable $th) {
-            return $this->respondFailure();
-        }
+            return $this->responUserSuccess($user);
+        // } catch (\Throwable $th) {
+        //     return $this->responseTryFail();
+        // }
     }
 
     protected function login(Request $request){
         try {
             $user = Mitra::where('username', $request->username)->first();
-            if (!$user) {
-                return response()->json([
-                    'error_code' => 1,
-                    'error_data' => 'Account anda tidak ditemukan. Harap lengkapi informasi account anda dengan benar !'
-                ]);
-            }
+            if (!$user)
+                return $this->responseFailure(1,'Account anda tidak ditemukan. Harap lengkapi informasi account anda dengan benar !');
             $user->log = 1;
             $user->update();
-            return $this->responseSuccess($user);
+            return $this->responUserSuccess($user);
         } catch (\Throwable $th) {
-            return $this->respondFailure();
+            return $this->responseTryFail();
         }
     }
 
-    protected function all(){
-        return response()->json([
-            'error_code' => 0,
-            'error_data' => '',
-            'data' => Mitra::all()
-        ]);
-    }
-
-    protected function find(Request $request){
-        try {
-            $request->validate([
-                'username' => 'required'
-            ]);
-
+    function show(Request $request){
+        // try {
+            if ($request->username == null)
+                return $this->responseData(Mitra::all());
             $user = Mitra::where('username', $request->username)->first();
-            $jamaah = DB::table('jamaahs')->where('nama_mitra', $user->id)->get();
-            if (empty($user)) {
-                return response([
-                    'error_code' => 1,
-                    'error_data' => 'Data mitra tidak ditemukan. Periksa kembali code yang anda masukan !'
-                ]);
-            }
-            return response()->json([
-                'error_code' => 0,
-                'error_data' => '',
-                'data' => [
-                    'mitra' => $user,
-                    'jamaah' => $jamaah
-                ]
-            ]);
-        } catch (Exception $th) {
-            return $this->respondFailure();
-        }
+            // $user->mitra;
+            // $user->jamaah;
+            return $this->responseData($user);
+        // } catch (Exception $th) {
+        //     return $this->responseTryFail();
+        // }
     }
 
     protected function update(Request $request){
-
         try {
             $user = Mitra::where('username',$request->username)->first();
             if ($request->hasFile('avatar')) {
@@ -120,97 +87,50 @@ class MitraController extends Controller
             if (!is_null($request->no_tlp)) $user->no_tlp = $request->no_tlp;
             if (!is_null($request->cabang)) $user->cabang = $request->cabang;
             $user->update();
-            return $this->responseSuccess($user);
+            return $this->responseData($user);
         } catch (\Throwable $th) {
-            return $this->respondFailure();
+            return $this->responseTryFail();
         }
     }
 
-    protected function delete(Request $request)
-    {
+    protected function delete(Request $request){
         try {
-            $user = Mitra::find($request->username);
-            if (is_null($user))
-                return response()->json([
-                    'error_code' => '1',
-                    'error_data' => 'Data mitra tidak ditemukan. Periksa kembali code yang anda masukan !',
-                ]);
-            
-            $file_loc = public_path('images/') . $user->avatar;
-            unlink($file_loc);
+            $user = Mitra::where('username',$request->username);
+            if ($user == null)
+                return $this->responseFailure(1,'Data mitra tidak ditemukan. Periksa kembali code yang anda masukan !');
+            if ($request->avatar != null){
+                $file_loc = public_path('images/') . $user->avatar;
+                unlink($file_loc);
+            }
+
             $user->delete();
-            return response()->json([
-                'error_code' => '0',
-                'error_data' => 'Berhasil menghapus data account mitra. Semua data tentang mitra telah dihapus !',
-            ]);
+            return $this->responseText('Berhasil menghapus data account mitra. Semua data tentang mitra telah dihapus !');
         } catch (Exception $th) {
-            return $this->respondFailure();
+            return $this->responseTryFail();
         }
     }
 
     protected function logout(Request $request){
         try {
             $user = Mitra::where('username', $request->username)->first();
-            if (!$user) {
-                return response()->json([
-                    'error_code' => 1,
-                    'error_data' => 'Account anda tidak ditemukan. Harap lengkapi informasi account anda dengan benar !'
-                ]);
-            }
+            if (!$user)
+                return $this->responseFailure(1, 'Account anda tidak ditemukan. Harap lengkapi informasi account anda dengan benar !');
+
             $user->log = 0;
             $user->update();
-            return response()->json([
-                'error_code' => 1,
-                'error_data' => 'Anda berhasil keluar applikasi. Terimakasih dan sampai jumpa lagi !'
-            ]);
+            return $this->responseText('Anda berhasil keluar applikasi. Terimakasih dan sampai jumpa lagi !');
         } catch (\Throwable $th) {
-            return $this->respondFailure();
+            return $this->responseTryFail();
         }
     }
 
-    protected function trackAgent(Request $request){
-        $user = DB::table('mitras')->where('code_agent', $request->code_agent)->first();
-        return response()->json([
-            'error_code' => 0,
-            'error_data' => '',
-            'data' => $user
-        ], 200, [], JSON_NUMERIC_CHECK);
-    }
+    // protected function trackAgent(Request $request){
+    //     $user = DB::table('mitras')->where('code_agent', $request->code_agent)->first();
+    //     return $this->responUserSuccess($user);
+    // }
 
-    protected function trackMitra(Request $request){
-        $user = DB::table('mitras')->where('code', $request->code)->get();
-        return response()->json([
-            'error_code' => 0,
-            'error_data' => '',
-            'data' => $user
-        ], 200, [], JSON_NUMERIC_CHECK);
-    }
-
-    protected function respondFailure()
-    {
-        return response()->json([
-            'error_code' => 1,
-            'error_data' => 'Harap periksa kembali koneksi internet anda !',
-        ]);
-    }
-
-    protected function responseSuccess($data)
-    {
-        return response()->json([
-            'error_code' => 0,
-            'error_data' => '',
-            'data' => [
-                'id' => $data->id,
-                'fullname' => $data->fullname,
-                'code_agent' => $data->code_agent,
-                'password' => Crypt::decrypt($data->password),
-                'code' => $data->code,
-                'username' => $data->username,
-                'alamat' => $data->alamat,
-                'cabang' => $data->cabang,
-                'no_tlp' => $data->no_tlp,
-                'log' => $data->log
-            ],
-        ], 200, [], JSON_NUMERIC_CHECK);
-    }
+    // protected function trackMitra(Request $request){
+    //     $user = DB::table('mitras')->where('code', $request->code)->get();
+    //     return $this->responUserSuccess($user);
+    // }
 }
