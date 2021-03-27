@@ -15,20 +15,15 @@ class CreateAkuntansTable extends Migration{
     {
         Schema::create('akuntans', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('kas');
-            $table->bigInteger('pemasukan_jamaah')->nullable();
-            $table->bigInteger('fee_mitra')->nullable();
-            $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
-            $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+            $table->timestamp('date')->default(DB::raw('CURRENT_TIMESTAMP'));
+            $table->unsignedBigInteger('jamaah_id')->nullable();
+            $table->string("keterangan");
+            $table->bigInteger('masuk');
+            $table->bigInteger('saldo');
         });
-
-        DB::table('akuntans')->insert(
-            array(
-                'kas' => 0,
-                'pemasukan_jamaah' => 0,
-                'fee_mitra' => 0,
-            )
-        );
+        Schema::table('akuntans', function($table){
+            $table->foreign('jamaah_id')->references('id')->on('pesanans')->onDelete('RESTRICT');
+        });
     }
 
     /**

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class CabangController extends Controller
 {
     protected function Add(Request $request){
-        // try {
+        try {
             $statement = DB::select("SHOW TABLE STATUS LIKE 'cabangs'");
             $nextId = $statement[0]->Auto_increment;
             $request['code'] = date("Y")."CBG".str_pad($nextId,6-floor(log10($nextId)),"0",STR_PAD_LEFT);
@@ -21,9 +21,9 @@ class CabangController extends Controller
                 return $this->responseFailure(1,'Nama Cabang tersebut sudah terdaftar. Harap ganti dengan nama lain !');
             $user = cabang::create($request->toArray());
             return $this->responseData($user);
-        // } catch (Exception $th) {
-        //     return $this->responseTryFail();
-        // }
+        } catch (Exception $th) {
+            return $this->responseTryFail();
+        }
     }
 
     protected function show(Request $request){

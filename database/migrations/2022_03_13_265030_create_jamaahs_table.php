@@ -10,14 +10,11 @@ class CreateJamaahsTable extends Migration{
         Schema::create('jamaahs', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->unsignedBigInteger('pesanan_id');
-            $table->unsignedBigInteger('aset_id');
-
+            $table->unsignedBigInteger('pesanan_id')->nullable();
             $table->string('nama_lengkap');
             $table->string('nama_ayah');
-            $table->bigInteger('nomer_ktp');
+            $table->bigInteger('no_ktp');
             $table->string('ttl');
-            $table->bigInteger('nomer_passport')->unique()->nullable();
             $table->enum('gender',['Pria','Wanita']);
             $table->string('negara');
             $table->string('alamat');
@@ -26,21 +23,18 @@ class CreateJamaahsTable extends Migration{
             $table->string('kota');
             $table->string('provinsi');
             $table->integer('kode_pos')->nullable();
-            $table->bigInteger('nomer_tlp');
+            $table->bigInteger('no_telp');
             $table->string('pendidikan');
             $table->string('pekerjaan');
             $table->string('status_haji')->nullable();
-            $table->string('nama_mitra');
-            $table->bigInteger('biaya_dibayar');
-            $table->string('nama_passport')->nullable();
-            $table->string('kota_passport')->nullable();
-            $table->date('tgl_habis_passport')->nullable();
-            $table->date('tgl_keluar_passport')->nullable();
             $table->string('darah');
             $table->string('nama_mahram');
             $table->string('hubungan_mahram')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
+        });
+        Schema::table('jamaahs', function($table){
+            $table->foreign('pesanan_id')->references('id')->on('pesanans')->onDelete('cascade');
         });
     }
 

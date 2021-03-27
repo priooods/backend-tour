@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
 
-class Umrah extends Model
-{
+class Umrah extends Model{
     use HasFactory;
 
     protected $fillable = [
@@ -21,14 +20,20 @@ class Umrah extends Model
         'biaya'
     ];
 
-    public function jadwal(){
+    public function jadwals(){
         return $this->hasMany(Jadwal::class, 'umrah_id');
+    }
+    public function jadwal(){
+        return $this->hasOne(Jadwal::class, 'umrah_id');
     }
     public function hotels(){
         return $this->hasMany(HotelUmrah::class);//->as('hotel_umrah');
     }
     public function maskapais(){
         return $this->hasMany(MaskapaiUmrah::class, 'umrah_id');
+    }
+    public function asets(){
+        return $this->hasMany(GudangUmrah::class, 'umrah_id');
     }
 
     // public function hotels(){
@@ -39,5 +44,8 @@ class Umrah extends Model
     }
     public function maskapai(){
         return $this->belongsToMany(Maskapai::class, 'maskapai_umrahs');
+    }
+    public function aset(){
+        return $this->belongsToMany(Gudang::class, 'gudang_umrahs', 'umrah_id', 'gudang_id');
     }
 }

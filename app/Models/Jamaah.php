@@ -9,16 +9,16 @@ use Illuminate\Notifications\Notifiable;
 class Jamaah extends Model
 {
     use HasFactory, Notifiable;
-
+    public $hidden = ['pesanan_id'];
     protected $fillable = [
         'code',
         'pesanan_id',
-        'aset_id',
+        'passport_id',
+        'mitra_id',
         'nama_lengkap',
         'nama_ayah',
-        'nomer_ktp',
+        'no_ktp',
         'ttl',
-        'nomer_passport',
         'gender',
         'negara',
         'alamat',
@@ -27,16 +27,19 @@ class Jamaah extends Model
         'kota',
         'provinsi',
         'kode_pos',
-        'nomer_tlp',
+        'no_telp',
         'pendidikan',
         'pekerjaan',
         'status_haji',
-        'tgl_keluar_passport',
-        'tgl_habis_passport',
-        'nama_passport',
-        'kota_passport',
         'darah',
         'nama_mahram',
         'hubungan_mahram',
     ];
+
+    public function pesanan(){
+        return $this->belongsTo(Pesanan::class,'pesanan_id','id');
+    }
+    public function passport(){
+        return $this->hasOne(Passport::class,'jamaah_id');
+    }
 }

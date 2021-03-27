@@ -5,18 +5,15 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Hotel extends Model{
+class Passport extends Model
+{
     use HasFactory;
-    protected $hidden = ['pivot'];
     public $timestamps = false;
+    protected $hidden = ['jamaah_id'];
     protected $fillable = [
         'nama',
-        'alamat',
         'kota',
-        'highlight'
+        'tgl_keluar',
+        'tgl_habis'
     ];
-
-    public function kamar(){
-        return $this->hasMany(Kamar::class,'hotel_id');
-    }
 }

@@ -16,33 +16,29 @@ class HotelController extends Controller{
                     $file->move(public_path('images'), $filename);
                     $request['highlight'] = $filename;
                 }
-            if ($request->kamar == null)
-                return $this->responseFailure(1, 'Tidak ada key kamar[nama,kapasitas,harga]!');
             $hotel = Hotel::create($request->toArray());
-            $kamar = $hotel->kamar()->createMany($request->kamar);
-
-            return $this->responseData([$hotel,$kamar]);
+            return $this->responseData($hotel);
         } catch (\Throwable $th) {
             return $this->responseTryFail();
         }
     }
 
-    protected function update_kamar(Request $request){
-        try{
-            $kamar = Kamar::find($request->id)->update($request->toArray());
-            return $this->responseData($kamar->all());
-        } catch (\Throwable $th) {
-            return $this->responseTryFail();
-        }
-    }
-    protected function delete_kamar(Request $request){
-        try{
-            Kamar::find($request->id)->delete();
-            return $this->responseText('kamar have been deleted!');
-        } catch (\Throwable $th) {
-            return $this->responseTryFail();
-        }
-    }
+    // protected function update_kamar(Request $request){
+    //     try{
+    //         $kamar = Kamar::find($request->id)->update($request->toArray());
+    //         return $this->responseData($kamar->all());
+    //     } catch (\Throwable $th) {
+    //         return $this->responseTryFail();
+    //     }
+    // }
+    // protected function delete_kamar(Request $request){
+    //     try{
+    //         Kamar::find($request->id)->delete();
+    //         return $this->responseText('kamar have been deleted!');
+    //     } catch (\Throwable $th) {
+    //         return $this->responseTryFail();
+    //     }
+    // }
 
     protected function update(Request $request){
         try {
@@ -61,10 +57,10 @@ class HotelController extends Controller{
                     $request['highlight'] = $filename;
                 }
             $hotel->update($request->toArray());
-            $kamar = '';
-            if ($request->kamar != null)
-                $kamar = $hotel->kamar()->createMany($request->kamar);
-            return $this->responseData([$hotel,$kamar]);
+            // $kamar = '';
+            // if ($request->kamar != null)
+            //     $kamar = $hotel->kamar()->createMany($request->kamar);
+            return $this->responseData([$hotel]);
         } catch (\Throwable $th) {
             return $this->responseTryFail();
         }
@@ -77,7 +73,7 @@ class HotelController extends Controller{
             $hotel = Hotel::find($request->id);
             if (empty($hotel))
                 return $this->responseFailure(1,'Data hotel tidak ditemukan. Periksa kembali id yang anda masukan !');
-            $hotel->kamar;
+            // $hotel->kamar;
             return $this->responseData($hotel);
         } catch (\Throwable) {
             return $this->responseTryFail();

@@ -9,7 +9,11 @@ use Illuminate\Notifications\Notifiable;
 class Mitra extends Model
 {
     use HasFactory, Notifiable;
-
+    public $jamaah = 0;
+    public $mjamaah = 0;
+    protected $hidden = [
+        'code_agent'
+    ];
     protected $fillable = [
         'fullname',
         'password',

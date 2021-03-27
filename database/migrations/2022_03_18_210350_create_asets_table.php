@@ -24,7 +24,7 @@ class CreateAsetsTable extends Migration
         Schema::table('asets', function($table){
             $table->foreign('jamaah_id')->references('id')->on('jamaahs')->onDelete('cascade');
             $table->foreign('gudang_id')->references('id')->on('gudangs')->onDelete('cascade');
-       });
+        });
     }
 
     /**

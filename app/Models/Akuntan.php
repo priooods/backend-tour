@@ -9,10 +9,11 @@ use Illuminate\Notifications\Notifiable;
 class Akuntan extends Model
 {
     use HasFactory, Notifiable;
-
+    public $timestamps = false;
     protected $fillable = [
-        'kas',
-        'pemasukan_jamaah',
-        'fee_mitra'
+        'jamaah_id',
+        'keterangan',
+        'masuk',
+        'saldo'
     ];
 }

@@ -4,17 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Notifications\Notifiable;
 
-class Aset extends Model
+class GudangUmrah extends Model
 {
-    use HasFactory, Notifiable;
+    use HasFactory;
     public $timestamps = false;
-
-
     protected $fillable = [
-        'jamaah_id',
+        'umrah_id',
         'gudang_id',
-        'jumlah',
+        'condition'
     ];
+
+
+    public function update_gudang(){
+        echo 1;
+        // return 1;
+    }
 }

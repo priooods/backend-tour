@@ -9,6 +9,7 @@ class Jadwal extends Model
 {
     use HasFactory;
     public $timestamps = false;
+    protected $hidden = ['id','umrah_id'];
     protected $fillable = [
         'berangkat',
         'pulang',

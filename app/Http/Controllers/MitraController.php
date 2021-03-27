@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Jamaah;
+use App\Models\Pesanan;
 use App\Models\Mitra;
 use Exception;
 use Illuminate\Http\Request;
@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class MitraController extends Controller{
     public function register (Request $request){
-        // try {
+        try {
             $request['password'] = Crypt::encrypt($request['password']);
             $request['log'] = 0;
 
@@ -34,9 +34,9 @@ class MitraController extends Controller{
                 ]);
             }
             return $this->responUserSuccess($user);
-        // } catch (\Throwable $th) {
-        //     return $this->responseTryFail();
-        // }
+        } catch (\Throwable $th) {
+            return $this->responseTryFail();
+        }
     }
 
     protected function login(Request $request){
@@ -53,16 +53,16 @@ class MitraController extends Controller{
     }
 
     function show(Request $request){
-        // try {
+        try {
             if ($request->username == null)
                 return $this->responseData(Mitra::all());
             $user = Mitra::where('username', $request->username)->first();
             // $user->mitra;
             // $user->jamaah;
             return $this->responseData($user);
-        // } catch (Exception $th) {
-        //     return $this->responseTryFail();
-        // }
+        } catch (Exception $th) {
+            return $this->responseTryFail();
+        }
     }
 
     protected function update(Request $request){
@@ -124,13 +124,31 @@ class MitraController extends Controller{
         }
     }
 
-    // protected function trackAgent(Request $request){
-    //     $user = DB::table('mitras')->where('code_agent', $request->code_agent)->first();
-    //     return $this->responUserSuccess($user);
-    // }
-
-    // protected function trackMitra(Request $request){
-    //     $user = DB::table('mitras')->where('code', $request->code)->get();
-    //     return $this->responUserSuccess($user);
-    // }
+    public function fee(Request $request){
+        $mitra = Mitra::all('id','code','code_agent');
+        if ($request->umrah_id != null){
+            foreach($mitra as $m){
+                $m->jamaah = Pesanan::where('mitra_id',$m->id)->where('umrah_id',$request->umrah_id)->count();
+            }
+        }
+        else{
+            foreach($mitra as $m){
+                $m->jamaah = Pesanan::where('mitra_id',$m->id)->count();
+                // return $this->responseData($m->jamaah);
+            }
+        }
+        // $mitra->save();
+        foreach($mitra as $m){
+            // $m->mjamaah = 0;
+            $my_mitra = $mitra->where('code_agent',$m->id);
+            foreach($my_mitra as $y){
+                $m->mjamaah += $y->jamaah;
+            }
+            $m->jamaah *= $request->fee;
+            $m->mjamaah *= $request->mitra_fee;
+            $m->fee = $m->jamaah + $m->mjamaah;
+        }
+        return $this->responseData($mitra);
+        // $mitra->save();
+    }
 }
