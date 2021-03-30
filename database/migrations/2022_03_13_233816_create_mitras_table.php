@@ -18,7 +18,6 @@ class CreateMitrasTable extends Migration{
             $table->bigInteger('no_tlp');
             $table->text('password');
             $table->integer('log');
-            $table->text('avatar')->nullable();
             $table->timestamp('created_at')->default(DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('updated_at')->default(DB::raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'));
         });

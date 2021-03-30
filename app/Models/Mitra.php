@@ -24,7 +24,6 @@ class Mitra extends Model
         'cabang_id',
         'code',
         'code_agent',
-        'avatar',
     ];
 
     public function jamaah()

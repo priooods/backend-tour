@@ -25,14 +25,6 @@ class MitraController extends Controller{
             }
 
             $user = Mitra::create($request->toArray());
-            if ($request->hasFile('avatar')) {
-                $file = $request->file('avatar');
-                $filename = $user->id . $user->username . '_' . $file->getClientOriginalName();
-                $path = $file->move(public_path('images'), $filename);
-                $user->update([
-                    'avatar' => $filename,
-                ]);
-            }
             return $this->responUserSuccess($user);
         } catch (\Throwable $th) {
             return $this->responseTryFail();
@@ -68,18 +60,6 @@ class MitraController extends Controller{
     protected function update(Request $request){
         try {
             $user = Mitra::where('username',$request->username)->first();
-            if ($request->hasFile('avatar')) {
-                $file = $request->file('avatar');
-                $filename = $user->id . $user->username . '_' . $file->getClientOriginalName();
-
-                if ($user->avatar) {
-                    $file_loc = public_path('images/') . $user->avatar;
-                    unlink($file_loc);
-                }
-
-                $path = $file->move(public_path('images'), $filename);
-                $user->avatar = $request->avatar = $filename;
-            }
             if (!is_null($request->username)) $user->username = $request->username;
             if (!is_null($request->fullname)) $user->fullname = $request->fullname;
             if (!is_null($request->password)) $user->password = Crypt::encrypt($request->password);
@@ -98,11 +78,6 @@ class MitraController extends Controller{
             $user = Mitra::where('username',$request->username);
             if ($user == null)
                 return $this->responseFailure(1,'Data mitra tidak ditemukan. Periksa kembali code yang anda masukan !');
-            if ($request->avatar != null){
-                $file_loc = public_path('images/') . $user->avatar;
-                unlink($file_loc);
-            }
-
             $user->delete();
             return $this->responseText('Berhasil menghapus data account mitra. Semua data tentang mitra telah dihapus !');
         } catch (Exception $th) {

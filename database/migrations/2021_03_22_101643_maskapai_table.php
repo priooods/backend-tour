@@ -9,7 +9,7 @@ class MaskapaiTable extends Migration{
         Schema::create('maskapais', function (Blueprint $table) {
             $table->id();
             $table->string('nama');
-            $table->string('logo');
+            $table->string('logo')->nullable();
         });
     }
 
